@@ -1,8 +1,18 @@
+// routes/transfer.js
 import express from "express";
 import { createIncoClient, encryption } from "../incoClient.js";
 
 const router = express.Router();
 
+/**
+ * Expected body:
+ * {
+ *   wallet: { publicKey: string, signTransaction: function, signAllTransactions: function },
+ *   to: string,
+ *   amount: string (BigInt as string),
+ *   memo?: string
+ * }
+ */
 router.post("/", async (req, res) => {
   try {
     const { wallet, to, amount, memo } = req.body;
@@ -11,6 +21,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing fields" });
     }
 
+    // Minimal wallet adapter
     const serverWallet = {
       publicKey: wallet.publicKey,
       signTransaction: wallet.signTransaction,
@@ -19,19 +30,27 @@ router.post("/", async (req, res) => {
 
     const inco = createIncoClient({ wallet: serverWallet });
 
-    const encryptedAmount = await encryption.encryptValue(BigInt(amount));
+    // Convert string → BigInt
+    const amountBigInt = BigInt(amount);
 
+    // Encrypt amount for Inco Lightning privacy
+    const encryptedAmount = await encryption.encryptValue(amountBigInt);
+
+    // Submit private transfer
     const txSig = await inco.transfer({
       to,
       amount: encryptedAmount,
       memo
     });
 
-    return res.json({ success: true, txSig });
+    res.json({
+      success: true,
+      txSig
+    });
   } catch (err) {
     console.error("Transfer error:", err);
-    return res.status(500).json({
-      error: err?.message || "Transfer failed"
+    res.status(500).json({
+      error: err.message || "Transfer failed"
     });
   }
 });
