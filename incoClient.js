@@ -1,5 +1,6 @@
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import { Client } from "@inco/solana-sdk";
+import pkg from "@inco/solana-sdk";
+const { Client, encryption } = pkg;
 
 const network = process.env.SOLANA_NETWORK;
 const programId = process.env.INCO_PROGRAM_ID;
