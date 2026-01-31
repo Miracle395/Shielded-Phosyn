@@ -1,0 +1,229 @@
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Times New Roman', serif;
+    background-color: #f9fafc; /* light neutral */
+    color: #222; /* darker text for contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .container { width: 100%; max-width: 420px; }
+  .modal {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 28px 22px;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .connect-btn, .pay-btn {
+    background: #6c4dd7; /* Phosyn Labs purple */
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .pay-btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 14px;
+    margin-top: 10px;
+  }
+  .pay-btn:hover { background: #5a3cc7; }
+
+  .modal img.banner {
+    width: 100%;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .amount {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #111;
+  }
+
+  .label {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #555;
+  }
+
+  .wallet-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 15px;
+    color: #111;
+  }
+  .wallet-token { display: flex; align-items: center; }
+  .wallet-info img {
+    width: 25px;
+    height: 25px;
+    margin-right: 8px;
+  }
+
+  .chain-tag {
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 8px;
+    margin-left: 8px;
+    color: #fff;
+  }
+  .ethereum { background-color: #627eea; }
+  .arbitrum { background-color: #28a0f0; }
+  .base { background-color: #0052ff; }
+  .solana { background-color: #00c48a; }
+  .usdc { background-color: #8247e5; }
+
+  .select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .custom-select {
+    background: #f9fafc;
+    border: 1px solid #e5e7eb;
+    color: #111;
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .custom-select img {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+  }
+  .chain-info { display: flex; align-items: center; }
+  .dropdown-caret {
+    color: #6c4dd7; /* subtle purple accent */
+    font-size: 12px;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+  }
+  .open .dropdown-caret { transform: rotate(180deg); }
+
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-top: 5px;
+    display: none;
+    z-index: 10;
+    list-style: none;
+    padding: 0;
+  }
+  .dropdown-options li {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #111;
+  }
+  .dropdown-options li:hover { background-color: #f3f4f6; }
+  .dropdown-options img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    background: #f9fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    color: #111;
+    font-size: 15px;
+  }
+  input:focus { outline: 2px solid #6c4dd7; }
+
+  .branding {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 18px;
+    color: #111;
+  }
+  .branding img {
+    width: 170px;
+    height: 90px;
+    object-fit: contain;
+  }
+
+  .memo-field { margin-top: 10px; margin-bottom: 16px; }
+
+  .blink { animation: blink-animation 0.6s steps(2, start) 3; }
+  @keyframes blink-animation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .pay-btn.loading {
+    background-color: #bbb;
+    color: #fff;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top: 3px solid #6c4dd7;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* === Desktop scaling overrides === */
+  @media (min-width: 768px) {
+    .container { max-width: clamp(420px, 48vw, 680px); }
+    .modal { padding: 32px 28px; }
+    .amount { font-size: clamp(32px, 3.2vw, 46px); }
+    .wallet-info { font-size: clamp(15px, 1vw, 17px); }
+    .connect-btn, .pay-btn {
+      font-size: clamp(14px, 1.05vw, 18px);
+      padding: 12px 18px;
+    }
+    .branding img { width: clamp(170px, 18vw, 220px); height: auto; }
+  }
