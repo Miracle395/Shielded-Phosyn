@@ -21,15 +21,15 @@ router.post("/", async (req, res) => {
   try {
     const { wallet, to, amount, memo } = req.body;
 
-    if (!wallet || !to || !amount) {
+    if (!wallet || !wallet.publicKey || !to || !amount) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
     // Minimal wallet adapter for Inco client
     const serverWallet = {
       publicKey: wallet.publicKey,
-      signTransaction: wallet.signTransaction,
-      signAllTransactions: wallet.signAllTransactions,
+      signTransaction: wallet.signTransaction || false,
+      signAllTransactions: wallet.signAllTransactions || false,
     };
 
     const inco = createIncoClient({ wallet: serverWallet });
@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
     const txSig = await inco.transfer({
       to,
       amount: encryptedAmount,
-      memo,
+      memo: memo || "",
     });
 
     res.json({
