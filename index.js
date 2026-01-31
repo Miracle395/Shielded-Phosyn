@@ -1,7 +1,7 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import transferRoute from "./routes/transfer.js";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const transferRoute = require("./routes/transfer.js");
 
 dotenv.config();
 
