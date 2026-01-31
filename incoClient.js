@@ -1,8 +1,9 @@
 // incoClient.js
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import pkg from "@inco/solana-sdk";
+// Explicitly import the ESM build to avoid Node CJS/ESM issues
+import * as IncoSDK from "@inco/solana-sdk/dist/esm/src/index.js";
 
-const { Client, encryption } = pkg;
+const { Client, encryption } = IncoSDK;
 
 const network = process.env.SOLANA_NETWORK || "devnet";
 const programId = process.env.INCO_PROGRAM_ID;
@@ -13,7 +14,7 @@ export function createIncoClient({ wallet }) {
     "confirmed"
   );
 
-  // Note: Client is now a factory function, not a class
+  // Client is a factory function in latest SDK
   return Client({
     network,
     wallet,
