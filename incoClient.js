@@ -1,5 +1,7 @@
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import pkg from "@inco/solana-sdk";
+
+// FORCE CommonJS build
+import pkg from "@inco/solana-sdk/dist/cjs/index.js";
 
 const { Client, encryption } = pkg;
 
