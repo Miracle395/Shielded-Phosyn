@@ -52,19 +52,20 @@
   <script src="https://cdn.jsdelivr.net/npm/@inco/solana-sdk/dist/index.iife.min.js"></script>
 
   <script>
-    let isWalletConnected = false;
     let wallet = null;
     let connection = null;
+    let isWalletConnected = false;
+
     const INCO_PROGRAM_ID = "5sjEbPiqgZrYwR31ahR6Uk9wf5awoX61YGg7jExQSwaj";
     const USDC_DECIMALS = 6;
-    const USD_AMOUNT = 1; // pre-filled $1
+    const USD_AMOUNT = 1; // $1 transfer
+    const USDC_MINT = new solanaWeb3.PublicKey("Es9vMFrzaCERmHD1V7nX1t1TFw6gMNH8eSJPc5AhdFY"); // Devnet USDC
 
     async function connectWallet() {
       if (!window.solana) return alert("⚠️ No Solana wallet detected. Install Phantom or Solflare.");
 
       try {
         wallet = window.solana;
-
         if (wallet.isPhantom || wallet.isSolflare) {
           const resp = await wallet.connect({ onlyIfTrusted: false });
           console.log("Wallet connected:", resp.publicKey.toBase58());
@@ -82,13 +83,13 @@
         } else {
           alert("⚠️ Please use Phantom or Solflare wallet.");
         }
-      } catch (e) {
-        console.error("Wallet connection error:", e);
-        alert("❌ Wallet connection failed: " + e.message);
+      } catch (err) {
+        console.error("Wallet connection failed:", err);
+        alert("❌ Wallet connection failed: " + err.message);
       }
     }
 
-    function updateToken() {
+    function updateTokenDisplay() {
       document.getElementById("tokenLabel").textContent = "USDC";
       document.getElementById("tokenSymbol").textContent = "USDC";
       document.getElementById("tokenIcon").src = "usdc.png";
@@ -97,7 +98,7 @@
     }
 
     async function submitPayment() {
-      if (!isWalletConnected) return alert("Please connect your wallet before making a payment.");
+      if (!isWalletConnected) return alert("Please connect your wallet first.");
 
       const recipient = document.getElementById("recipient").value;
       const memo = document.getElementById("paymentMemo").value;
@@ -108,6 +109,7 @@
       payBtn.innerHTML = `<span class="spinner"></span>Processing...`;
 
       try {
+        // --- Create Inco Client ---
         const client = new IncoSDK.Client({
           network: "devnet",
           wallet,
@@ -115,14 +117,36 @@
           programId: INCO_PROGRAM_ID
         });
 
-        const amountInTokens = Math.round(USD_AMOUNT * Math.pow(10, USDC_DECIMALS));
+        // --- Check recipient USDC token account ---
+        const recipientPubkey = new solanaWeb3.PublicKey(recipient);
+        const recipientATA = await solanaWeb3.Token.getAssociatedTokenAddress(
+          USDC_MINT,
+          recipientPubkey
+        );
 
+        const accountInfo = await connection.getAccountInfo(recipientATA);
+        if (!accountInfo) {
+          console.log("Recipient USDC account does not exist, creating...");
+          const tx = await client.createAssociatedTokenAccount({
+            mint: USDC_MINT,
+            owner: recipientPubkey
+          });
+          console.log("Recipient token account created:", tx);
+        }
+
+        // --- Encrypt transfer amount ---
+        const encryptedAmount = await IncoSDK.encryption.encryptValue(
+          BigInt(USD_AMOUNT * 10 ** USDC_DECIMALS)
+        );
+
+        // --- Submit transfer ---
         const txSig = await client.transfer({
           to: recipient,
-          amount: amountInTokens,
+          amount: encryptedAmount,
           memo
         });
 
+        // --- Update UI ---
         document.getElementById("successDetails").innerHTML =
           `Sent $${USD_AMOUNT.toFixed(2)} USDC to ${recipient}.<br>${memo ? `Memo: ${memo}<br>` : ''}TX Sig: ${txSig.slice(0, 8)}...`;
 
@@ -132,6 +156,7 @@
 
         payBtn.textContent = "Paid";
         payBtn.disabled = true;
+
       } catch (err) {
         console.error("Payment error:", err);
         alert("❌ Payment failed: " + err.message);
@@ -143,7 +168,7 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("connectBtn").addEventListener("click", connectWallet);
-      updateToken();
+      updateTokenDisplay();
     });
   </script>
 </body>
