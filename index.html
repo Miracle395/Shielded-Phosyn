@@ -46,9 +46,9 @@
     </div>
   </div>
 
-  <!-- Load Solana Web3.js -->
+  <!-- Solana Web3.js -->
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
-  <!-- Load Inco SDK -->
+  <!-- Inco SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@inco/solana-sdk/dist/index.iife.min.js"></script>
 
   <script>
@@ -64,20 +64,27 @@
 
       try {
         wallet = window.solana;
-        if (!wallet.isConnected) await wallet.connect();
-        isWalletConnected = true;
 
-        connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("devnet"), "confirmed");
+        if (wallet.isPhantom || wallet.isSolflare) {
+          const resp = await wallet.connect({ onlyIfTrusted: false });
+          console.log("Wallet connected:", resp.publicKey.toBase58());
+          isWalletConnected = true;
 
-        const connectBtn = document.getElementById("connectBtn");
-        connectBtn.textContent = "Connected";
-        connectBtn.disabled = true;
-        connectBtn.style.backgroundColor = "#a5e21d";
+          connection = new solanaWeb3.Connection(
+            solanaWeb3.clusterApiUrl("devnet"),
+            "confirmed"
+          );
 
-        console.log("Wallet connected:", wallet.publicKey.toBase58());
+          const connectBtn = document.getElementById("connectBtn");
+          connectBtn.textContent = "Connected";
+          connectBtn.disabled = true;
+          connectBtn.style.backgroundColor = "#a5e21d";
+        } else {
+          alert("⚠️ Please use Phantom or Solflare wallet.");
+        }
       } catch (e) {
-        console.error(e);
-        alert(" Wallet connection failed: " + e.message);
+        console.error("Wallet connection error:", e);
+        alert("❌ Wallet connection failed: " + e.message);
       }
     }
 
@@ -126,8 +133,8 @@
         payBtn.textContent = "Paid";
         payBtn.disabled = true;
       } catch (err) {
-        console.error(err);
-        alert(" Payment failed: " + err.message);
+        console.error("Payment error:", err);
+        alert("❌ Payment failed: " + err.message);
         payBtn.disabled = false;
         payBtn.classList.remove("loading");
         payBtn.innerHTML = "Pay";
