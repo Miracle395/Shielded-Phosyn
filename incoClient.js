@@ -1,9 +1,12 @@
 import { Connection, clusterApiUrl } from "@solana/web3.js";
+import { createRequire } from "module";
 
-// FORCE CommonJS build
-import pkg from "@inco/solana-sdk/dist/cjs/index.js";
+const require = createRequire(import.meta.url);
 
-const { Client, encryption } = pkg;
+// Force CommonJS load
+const incoSdk = require("@inco/solana-sdk");
+
+const { Client, encryption } = incoSdk;
 
 export { encryption };
 
