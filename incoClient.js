@@ -1,28 +1,25 @@
+// incoClient.js
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import { createRequire } from "module";
+import pkg from "@inco/solana-sdk";
 
-const require = createRequire(import.meta.url);
+const { Client, encryption } = pkg;
 
-// Force CommonJS load
-const incoSdk = require("@inco/solana-sdk");
-
-const { Client, encryption } = incoSdk;
-
-export { encryption };
+const network = process.env.SOLANA_NETWORK || "devnet";
+const programId = process.env.INCO_PROGRAM_ID;
 
 export function createIncoClient({ wallet }) {
-  const network = process.env.SOLANA_NETWORK;
-  const programId = process.env.INCO_PROGRAM_ID;
-
   const connection = new Connection(
     clusterApiUrl(network),
     "confirmed"
   );
 
-  return new Client({
+  // Note: Client is now a factory function, not a class
+  return Client({
     network,
     wallet,
     connection,
     programId
   });
 }
+
+export { encryption };
