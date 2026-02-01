@@ -1,9 +1,9 @@
 // incoClient.js
-import pkg from "@inco/solana-sdk";
+import incoPkg from "@inco/solana-sdk";
 import { Connection, clusterApiUrl, Keypair } from "@solana/web3.js";
 import fs from "fs";
 
-const { Client, encryption } = pkg;
+const { createClient, encryption } = incoPkg;
 
 /* ================================
    CONFIG
@@ -12,26 +12,26 @@ const { Client, encryption } = pkg;
 const network = process.env.SOLANA_NETWORK || "devnet";
 const programId = process.env.INCO_PROGRAM_ID;
 
-// Load server authority keypair
+if (!programId) {
+  throw new Error("INCO_PROGRAM_ID is required");
+}
+
 const keypairPath = process.env.SERVER_KEYPAIR_PATH || "./server-keypair.json";
 const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
 const authority = Keypair.fromSecretKey(Uint8Array.from(secret));
 
-const connection = new Connection(
-  clusterApiUrl(network),
-  "confirmed"
-);
+const connection = new Connection(clusterApiUrl(network), "confirmed");
 
 /* ================================
-   CLIENT FACTORY
+   CLIENT
 ================================ */
 
 export function createIncoClient() {
-  return new Client({
+  return createClient({
     network,
     connection,
     programId,
-    wallet: authority, // ✅ server authority only
+    wallet: authority
   });
 }
 
