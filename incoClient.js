@@ -1,5 +1,7 @@
 // incoClient.js
-const { createClient, encryption } = require("@inco/solana-sdk");
+const pkg = require("@inco/solana-sdk");
+const { Client, encryption } = pkg;
+
 const { Connection, clusterApiUrl } = require("@solana/web3.js");
 
 const network = process.env.SOLANA_NETWORK || "devnet";
@@ -11,7 +13,8 @@ function createIncoClient({ wallet }) {
     "confirmed"
   );
 
-  return createClient({
+  // ✅ IMPORTANT: Client is a FACTORY, not a constructor
+  return Client({
     network,
     wallet,
     connection,
