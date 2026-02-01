@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phosyn — Private USDC Payment</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" href="assets/phosyn10.png" />
+  <link rel="stylesheet" href="phosyn.css" />
+</head>
+<body>
+
+  <div class="container">
+    <div class="modal">
+
+      <!-- HEADER -->
+      <div class="top-bar">
+        <img src="assets/phosyn.png" class="logo" />
+        <button id="connectBtn" class="connect-btn">Connect</button>
+      </div>
+
+      <!-- AMOUNT -->
+      <div class="amount">$1.00</div>
+
+      <!-- TOKEN -->
+      <div class="wallet-info">
+        <div class="wallet-token">
+          <img src="assets/usdc.png" />
+          <span>USDC</span>
+          <span class="chain-tag">Devnet</span>
+        </div>
+        <span>1.000000</span>
+      </div>
+
+      <!-- RECIPIENT -->
+      <label>To</label>
+      <input
+        id="recipient"
+        disabled
+        value="4M5fmmQNQhXGxT2DfFprXoA9kCGXcDkY3VFgfiT7FzK9"
+      />
+
+      <!-- MEMO -->
+      <label>Memo</label>
+      <input id="memo" placeholder="Optional note" />
+
+      <!-- PAY -->
+      <button id="payBtn" class="pay-btn">Pay Privately</button>
+
+      <!-- RESULT -->
+      <div id="result" class="result"></div>
+    </div>
+  </div>
+
+  <!-- Solana -->
+  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+
+  <!-- Inco SDK (browser-safe) -->
+  <script type="module" src="inco.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
