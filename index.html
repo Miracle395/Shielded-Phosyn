@@ -2,62 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Phosyn — Private USDC Payment</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="icon" href="assets/phosyn10.png" />
+  <title>Phosyn – Private USDC Payment</title>
   <link rel="stylesheet" href="phosyn.css" />
 </head>
 <body>
 
   <div class="container">
     <div class="modal">
-
-      <!-- HEADER -->
       <div class="top-bar">
-        <img src="assets/phosyn.png" class="logo" />
+        <div class="branding"><img src="phosyn.png" alt="Phosyn" /></div>
         <button id="connectBtn" class="connect-btn">Connect</button>
       </div>
 
-      <!-- AMOUNT -->
       <div class="amount">$1.00</div>
 
-      <!-- TOKEN -->
+      <div class="label">Paying with</div>
       <div class="wallet-info">
         <div class="wallet-token">
-          <img src="assets/usdc.png" />
+          <img src="usdc.png" alt="USDC" />
           <span>USDC</span>
-          <span class="chain-tag">Devnet</span>
+          <span class="chain-tag base">Devnet</span>
         </div>
-        <span>1.000000</span>
+        <span>1.000000 USDC</span>
       </div>
 
-      <!-- RECIPIENT -->
-      <label>To</label>
-      <input
-        id="recipient"
-        disabled
-        value="4M5fmmQNQhXGxT2DfFprXoA9kCGXcDkY3VFgfiT7FzK9"
-      />
+      <div class="label">To</div>
+      <input id="recipient" type="text" placeholder="Recipient wallet" />
 
-      <!-- MEMO -->
-      <label>Memo</label>
-      <input id="memo" placeholder="Optional note" />
+      <div class="label">Memo (optional)</div>
+      <input id="paymentMemo" type="text" placeholder="What is this payment for?" />
 
-      <!-- PAY -->
-      <button id="payBtn" class="pay-btn">Pay Privately</button>
+      <button id="payBtn" class="pay-btn">Pay</button>
 
-      <!-- RESULT -->
-      <div id="result" class="result"></div>
+      <div id="successScreen" style="display:none; text-align:center; margin-top:32px;">
+        <div style="font-size:42px;">✅</div>
+        <h3>Payment Successful</h3>
+        <p id="successDetails"></p>
+        <button id="viewTxBtn" class="pay-btn" style="background:#444;">View on Explorer</button>
+      </div>
     </div>
   </div>
 
-  <!-- Solana -->
+  <!-- Solana Web3.js -->
   <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
 
-  <!-- Inco SDK (browser-safe) -->
+  <!-- Inco SDK (Browser) -->
   <script type="module" src="inco.js"></script>
+
+  <!-- App logic -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
