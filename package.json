@@ -1,16 +1,19 @@
 {
-  "name": "phosyn-inco-backend",
+  "name": "phosyn-backend",
   "version": "1.0.0",
-  "description": "Server-side Inco private payment relay",
-  "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "@inco/solana-sdk": "latest",
+    "@inco/solana-sdk": "^0.2.6",
     "@solana/web3.js": "^1.98.0",
-    "dotenv": "^16.4.5",
+    "bs58": "^5.0.0",
     "express": "^4.19.2",
+    "tweetnacl": "^1.0.3",
     "cors": "^2.8.5"
   }
 }
