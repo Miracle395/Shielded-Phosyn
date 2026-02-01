@@ -21,8 +21,13 @@ const connection = new Connection(
 );
 
 // 🔴 REQUIRED: SET THESE
-const USDC_MINT = new PublicKey("PASTE_DEVNET_USDC_MINT");
-const INCO_PROGRAM_ID = new PublicKey("PASTE_INCO_PROGRAM_ID");
+const USDC_MINT = new PublicKey(
+  "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+);
+
+const INCO_PROGRAM_ID = new PublicKey(
+  "5sjEbPiqgZrYwR31ahR6Uk9wf5awoX61YGg7jExQSwaj"
+);
 
 async function privateTransfer({ to, amount }) {
   if (!window.solana) {
