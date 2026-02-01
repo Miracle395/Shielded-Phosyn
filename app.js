@@ -10,16 +10,29 @@ const payBtn = document.getElementById("payBtn");
 const result = document.getElementById("result");
 
 connectBtn.onclick = async () => {
-  if (!window.solana) {
-    alert("Install Phantom");
+  console.log("Connect clicked");
+
+  const provider =
+    window.phantom?.solana || window.solana;
+
+  if (!provider) {
+    alert("❌ Phantom wallet not detected.\nOpen this site in Phantom browser or install Phantom.");
     return;
   }
 
-  wallet = window.solana;
-  await wallet.connect();
+  try {
+    wallet = provider;
 
-  connectBtn.textContent = "Connected";
-  connectBtn.disabled = true;
+    const res = await wallet.connect();
+    console.log("Wallet connected:", res.publicKey.toString());
+
+    connectBtn.textContent = "Connected";
+    connectBtn.disabled = true;
+    connectBtn.style.background = "#4caf50";
+  } catch (err) {
+    console.error("Wallet connection failed:", err);
+    alert("Wallet connection rejected");
+  }
 };
 
 payBtn.onclick = async () => {
