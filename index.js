@@ -1,22 +1,37 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const transferRoute = require("./routes/transfer.js");
+// index.js
+import express from "express";
+import cors from "cors";
 
-dotenv.config();
+import transferRoute from "./routes/transfer.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+/* ================================
+   MIDDLEWARE
+================================ */
 
 app.use(cors());
 app.use(express.json());
 
+/* ================================
+   ROUTES
+================================ */
+
 app.use("/api/transfer", transferRoute);
 
-app.get("/", (_, res) => {
-  res.send("✅ Phosyn Inco backend running");
+/* ================================
+   HEALTH CHECK
+================================ */
+
+app.get("/", (req, res) => {
+  res.send("Phosyn backend running 🛡️");
 });
 
-const PORT = process.env.PORT || 3000;
+/* ================================
+   START SERVER
+================================ */
+
 app.listen(PORT, () => {
-  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
