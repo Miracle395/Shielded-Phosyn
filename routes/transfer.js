@@ -6,33 +6,37 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    const { wallet, to, amount, memo } = req.body;
+    const { from, to, amount, memo } = req.body;
 
-    if (!wallet || !wallet.publicKey || !to || !amount) {
+    // ✅ FIXED validation
+    if (!from || !to || !amount) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
+    // ✅ Server-side wallet (Inco controlled)
     const serverWallet = {
-      publicKey: wallet.publicKey,
-      signTransaction: wallet.signTransaction || false,
-      signAllTransactions: wallet.signAllTransactions || false,
+      publicKey: from
     };
 
     const inco = createIncoClient({ wallet: serverWallet });
 
+    // ✅ amount is human-readable ("1")
     const amountBigInt = BigInt(amount);
     const encryptedAmount = await encryption.encryptValue(amountBigInt);
 
     const txSig = await inco.transfer({
       to,
       amount: encryptedAmount,
-      memo: memo || "",
+      memo: memo || ""
     });
 
     res.json({ success: true, txSig });
+
   } catch (err) {
     console.error("Transfer error:", err);
-    res.status(500).json({ error: err.message || "Transfer failed" });
+    res.status(500).json({
+      error: err.message || "Transfer failed"
+    });
   }
 });
 
