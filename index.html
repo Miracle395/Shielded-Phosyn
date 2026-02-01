@@ -3,234 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phosyn – Private USDC Payment</title>
-
-  <link rel="icon" href="phosyn10.png" type="image/png" sizes="32x32" />
-  <link rel="stylesheet" href="phosyn.css" />
+  <title>Private USDC (Inco)</title>
 </head>
 <body>
 
-  <div class="container">
-    <div class="modal">
+<h2>Private USDC Payment (Inco)</h2>
 
-      <!-- HEADER -->
-      <div class="top-bar">
-        <div class="branding">
-          <img src="phosyn.png" alt="Phosyn" />
-        </div>
-        <button id="connectBtn" class="connect-btn">Connect</button>
-      </div>
+<button id="connectBtn">Connect Wallet</button><br/><br/>
 
-      <!-- AMOUNT -->
-      <div class="amount">$1.00</div>
+<label>Recipient</label><br/>
+<input id="to" value="4M5fmmQNQhXGxT2DfFprXoA9kCGXcDkY3VFgfiT7FzK9" size="50"/><br/><br/>
 
-      <!-- TOKEN INFO -->
-      <div class="label">Paying with</div>
-      <div class="wallet-info">
-        <div class="wallet-token">
-          <img src="usdc.png" alt="USDC" />
-          <span>USDC</span>
-          <span class="chain-tag base">Devnet</span>
-        </div>
-        <span>1.000000 USDC</span>
-      </div>
+<label>Amount (USDC)</label><br/>
+<input id="amount" value="1"/><br/><br/>
 
-      <!-- RECIPIENT -->
-      <div class="label">To</div>
-      <input
-        id="recipient"
-        type="text"
-        value="4M5fmmQNQhXGxT2DfFprXoA9kCGXcDkY3VFgfiT7FzK9"
-        disabled
-      />
+<button id="sendBtn">Send Private Payment</button>
 
-      <!-- MEMO -->
-      <div class="label">Memo (optional)</div>
-      <input
-        id="paymentMemo"
-        type="text"
-        placeholder="What is this payment for?"
-      />
+<pre id="log"></pre>
 
-      <!-- PAY -->
-      <button id="payBtn" class="pay-btn">Pay</button>
-      
-      <!-- LOADER -->
-<div
-  id="loader"
-  style="
-    display:none;
-    text-align:center;
-    margin-top:24px;
-    color:#aaa;
-  "
->
-  ⏳ Processing private payment…
-</div>
-
-      <!-- SUCCESS -->
-      <div
-        id="successScreen"
-        style="display:none; text-align:center; margin-top:32px;"
-      >
-        <div style="font-size:42px;">✅</div>
-        <h3>Payment Successful</h3>
-        <p id="successDetails"></p>
-        <button
-          id="viewTxBtn"
-          class="pay-btn"
-          style="background:#444;"
-        >
-          View on Explorer
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Solana Wallet Adapter (browser-safe) -->
+<!-- Solana Web3 (IIFE, mobile-safe) -->
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
 
-<script>
-/* ================================
-   CONFIG
-================================= */
+<!-- SPL Token (UMD build) -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.4.9/lib/index.iife.min.js"></script>
 
-const BACKEND_URL =
-  "https://shielded-phosyn.onrender.com/api/transfer";
-
-let wallet = null;
-let isConnected = false;
-
-/* ================================
-   WALLET CONNECT
-================================= */
-
-async function connectWallet() {
-  if (!window.solana) {
-    alert("Please install Phantom or Solflare");
-    return;
-  }
-
-  wallet = window.solana;
-  await wallet.connect();
-
-  isConnected = true;
-
-  const btn = document.getElementById("connectBtn");
-  btn.textContent = "Connected";
-  btn.disabled = true;
-  btn.style.background = "#a5e21d";
-}
-
-/* ================================
-   PAYMENT FLOW
-================================= */
-
-async function submitPayment() {
-  const loader = document.getElementById("loader");
-
-  try {
-    if (!wallet) {
-      alert("Connect wallet first");
-      return;
-    }
-
-    loader.style.display = "block";
-
-    const sender = wallet.publicKey;
-    const recipient = new PublicKey(
-      document.getElementById("recipient").value
-    );
-
-    const amountUi = 1;
-    const amount = amountUi * 1_000_000;
-
-    console.log("Encrypting amount...");
-    const encryptedAmount = await encryptValue(
-      BigInt(amount)
-    );
-
-    console.log("Resolving ATAs...");
-    const senderATA = await getAssociatedTokenAddress(
-      USDC_MINT,
-      sender
-    );
-
-    const recipientATA = await getAssociatedTokenAddress(
-      USDC_MINT,
-      recipient
-    );
-
-    console.log("Building instructions...");
-    const transferIx = createTransferInstruction(
-      senderATA,
-      recipientATA,
-      sender,
-      amount
-    );
-
-    const incoIx = new TransactionInstruction({
-      programId: INCO_PROGRAM_ID,
-      keys: [
-        { pubkey: sender, isSigner: true, isWritable: false }
-      ],
-      data: Buffer.from(encryptedAmount)
-    });
-
-    const tx = new Transaction().add(
-      transferIx,
-      incoIx
-    );
-
-    tx.feePayer = sender;
-    tx.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
-
-    console.log("Requesting signature...");
-    const signed = await wallet.signTransaction(tx);
-
-    console.log("Sending transaction...");
-    const sig = await connection.sendRawTransaction(
-      signed.serialize()
-    );
-
-    await connection.confirmTransaction(sig);
-
-    loader.style.display = "none";
-
-    document.getElementById("successDetails").innerHTML =
-      `Sent 1 USDC<br/>Tx: ${sig.slice(0, 12)}…`;
-
-    document.getElementById("successScreen").style.display =
-      "block";
-
-    document.getElementById("viewTxBtn").onclick = () =>
-      window.open(
-        `https://explorer.solana.com/tx/${sig}?cluster=devnet`,
-        "_blank"
-      );
-
-  } catch (err) {
-    loader.style.display = "none";
-    console.error("PRIVATE PAYMENT ERROR:", err);
-    alert(err.message || "Private payment failed");
-  }
-}
-
-/* ================================
-   EVENTS
-================================= */
-
-document
-  .getElementById("connectBtn")
-  .addEventListener("click", connectWallet);
-
-document
-  .getElementById("payBtn")
-  .addEventListener("click", submitPayment);
-</script>
+<!-- Inco SDK (UMD-compatible wrapper via esm.sh) -->
+<script type="module" src="./main.js"></script>
 
 </body>
 </html>
